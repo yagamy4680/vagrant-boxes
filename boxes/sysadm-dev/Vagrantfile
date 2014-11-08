@@ -15,29 +15,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.synced_folder "../../", "/vagrant-boxes"
 
   # Every Vagrant virtual environment requires a box to build off of.
-  config.vm.box = "ffuenf/ubuntu-14.04.1-server-amd64"
-
-  # Enable `vagrant-cachier` to cache APT packages for multiple machine
-  # environment.
-  #
-  if Vagrant.has_plugin?("vagrant-cachier")
-    config.cache.scope = :machine
-    config.cache.auto_detect = true
-  else
-    # only display the tips on vagrant up
-    if ARGV[0] == "up"
-      puts "[information] recommended vagrant plugin 'vagrant-cachier' plugin was not found"
-      puts "[information] 'vagrant-cachier' will speed up repeated provisioning operations"
-      puts "[information] install the plugin with command 'vagrant plugin install vagrant-cachier'"
-    end
-  end
-
+  config.vm.box = "phusion/ubuntu-14.04-amd64"
+  
   # Invoke following scripts to install softwares
-  #   - install_arduino.sh
-  #   - install_bluez.sh
   #   - install_nodejs.sh
-  #   - install_util.sh
-  #   - install_wireless.sh
+  #   - install_docker.sh
   #
   config.vm.provision "shell", inline: "sudo /vagrant-boxes/scripts/init.sh"
 end
