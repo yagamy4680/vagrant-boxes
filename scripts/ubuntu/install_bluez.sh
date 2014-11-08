@@ -27,4 +27,5 @@ if [ "true" == "${INSTALL_NODEJS_PACKAGES}" ]; then
 #	npm install -g noble
 #	npm install -g bleno
 #	npm install -g sensortag
+	echo "no bluetooth packages for nodejs is installed"
 fi
