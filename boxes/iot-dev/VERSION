@@ -2,7 +2,12 @@
 0.2.0
   - major refactorying
   - installed with nodejs, bluez, wireless command-line toolkits, and Arduino development toolkits
-
+    - nodejs v0.10.33, npm v1.4.28, LiveScript v1.2.0
+    - bluez v5.13
+    - python v2.7.6
+    - iw v3.4
+    - wpa_supplicant v2.1
+    - gawk v4.0.1
 
 0.1.0
   - initial version, based on `ffuenf/ubuntu-14.04.1-server-amd64`
