@@ -1,0 +1,3 @@
+0.1.0
+  - initial version, based on `phusion/ubuntu-14.04-amd64`
+  - installed with `Docker` and `Node.js`
