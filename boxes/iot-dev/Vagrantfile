@@ -11,11 +11,18 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.hostname = VBOX_NAME
 
+  # Share current repository at top.
+  config.vm.synced_folder "../../", "/vagrant-boxes"
+
   # Every Vagrant virtual environment requires a box to build off of.
   config.vm.box = "ffuenf/ubuntu-14.04.1-server-amd64"
 
-  config.vm.provision "shell", inline: <<-EOF
-    sudo apt-get update
-    sudo apt-get install -y iw wpasupplicant
-  EOF
+  # Invoke following scripts to install softwares
+  #   - install_arduino.sh
+  #   - install_bluez.sh
+  #   - install_nodejs.sh
+  #   - install_util.sh
+  #   - install_wireless.sh
+  #
+  config.vm.provision "shell", inline: "sudo /vagrant-boxes/scripts/init.sh"
 end

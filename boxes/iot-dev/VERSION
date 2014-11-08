@@ -1,4 +1,9 @@
 
+0.2.0
+  - major refactorying
+  - installed with nodejs, bluez, wireless command-line toolkits, and Arduino development toolkits
+
+
 0.1.0
   - initial version, based on `ffuenf/ubuntu-14.04.1-server-amd64`
   - installed with `iw` tool
