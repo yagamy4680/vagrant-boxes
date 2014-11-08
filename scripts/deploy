@@ -31,14 +31,34 @@ echo -e "\tname: ${NAME}"
 echo -e "\tversion: ${VERSION}"
 echo -e ""
 
-vagrant destroy -f
-vagrant up --provider ${PROVIDER}
-vagrant ssh -c "sudo apt-get clean"
-vagrant ssh -c "sudo rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*"
-rm -f ${BOX_PATH}
-vagrant package --output=${BOX_PATH}
+# Exit when error
+set -e
 
+# Make sure the default Vagrantfile is loaded before 
+# Vagrantfile at current disk.
+#
+# Refer to https://docs.vagrantup.com/v2/vagrantfile/ to 
+# understand `Load Order and Merge`
+#
+cp ../../scripts/Vagrantfile ~/.vagrant.d
+
+# Destroy previous disk.
+vagrant destroy -f
+
+# Bring-up the box, and install all required software with provision scripts
+time vagrant up --provider ${PROVIDER}
+
+# Disable `vagrant-cachier` (so no cache folder is mounted) and bring-up again for disk-cleanup
+[ "" == "$(vagrant plugin list | grep "vagrant-cachier")" ] && export IGNORE_APT_CACHE_CLEANUP="true" || export IGNORE_APT_CACHE_CLEANUP="false"
+time vagrant ssh -c "sudo IGNORE_APT_CACHE_CLEANUP=${IGNORE_APT_CACHE_CLEANUP} /vagrant-boxes/scripts/cleanup_disk"
+
+# Package the box
+rm -f ${BOX_PATH}
+time vagrant package --output=${BOX_PATH}
+
+# Upload the box to host server
 echo "upload box to ${HOST_SITE}"
 scp ${BOX_PATH} ${HOST_URL}
 
+# Delete the box file
 rm -f ${BOX_PATH}

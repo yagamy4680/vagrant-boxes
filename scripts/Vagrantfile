@@ -1,0 +1,35 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# Shared Vagrantfile, will be automcatically copied to `~/.vagrant.d` 
+# when `deploy` script is launched.
+# 
+
+Vagrant.configure("2") do |config|
+
+  # Enable `vagrant-cachier` to cache APT packages for multiple machine
+  # environment.
+  #
+  if Vagrant.has_plugin?("vagrant-cachier")
+    if ENV.has_key?("CACHIER") 
+      if ENV["CACHIER"] == "false"
+        puts "[information] disable vagrant-cachier because ENV['CACHIER'] is false"
+        config.cache.auto_detect = false
+      else
+        config.cache.scope = :machine
+        config.cache.auto_detect = true
+      end
+    else
+      config.cache.scope = :machine
+      config.cache.auto_detect = true
+    end
+  else
+    # only display the tips on vagrant up
+    if ARGV[0] == "up"
+      puts "[information] recommended vagrant plugin 'vagrant-cachier' plugin was not found"
+      puts "[information] 'vagrant-cachier' will speed up repeated provisioning operations"
+      puts "[information] install the plugin with command 'vagrant plugin install vagrant-cachier'"
+    end
+  end
+
+end
