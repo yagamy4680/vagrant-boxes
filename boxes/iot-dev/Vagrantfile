@@ -33,11 +33,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   end
 
   # Invoke following scripts to install softwares
-  #   - install_arduino.sh
-  #   - install_bluez.sh
-  #   - install_nodejs.sh
-  #   - install_util.sh
-  #   - install_wireless.sh
+  #   - install_arduino
+  #   - install_bluez
+  #   - install_nodejs
+  #   - install_util
+  #   - install_wireless
   #
-  config.vm.provision "shell", inline: "sudo /vagrant-boxes/scripts/init.sh"
+  config.vm.provision "shell", inline: "sudo /vagrant-boxes/scripts/init"
 end

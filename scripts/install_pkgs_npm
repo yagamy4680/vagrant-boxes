@@ -1,0 +1,28 @@
+#!/bin/bash
+set -e
+
+# Detect hostname
+[ "" == "${BOX_NAME}" ] && BOX_NAME=$(hostname)
+
+# Detect current directory
+#
+TMP=$(pwd)
+CURRENT=$(dirname $0)
+cd ${CURRENT}
+CURRENT=$(pwd)
+cd ${TMP}
+
+# Detect `npm_packages.conf` for Nodejs modules to be installed.
+#
+MODULE_LIST_FILE="${CURRENT}/_${BOX_NAME}/npm_packages.conf"
+if [ ! -f "${MODULE_LIST_FILE}" ]; then
+        echo "[warning] no packages to install, because of missing ${MODULE_LIST_FILE} ..."
+        exit 0
+fi
+
+# Install each module
+#
+MODULES=$(cat ${MODULE_LIST_FILE} | sed -e 's/^ *//' | sed -e 's/ *$//' | sed 's/#.*$//g' | grep -v "^$" | awk '{printf "%s@%s ", $1, $2}')
+echo "install nodejs modules: "
+echo ${MODULES} | tr ' ' '\n' | awk '{printf "\t%s\n", $1}' | sort
+npm install -g ${MODULES}

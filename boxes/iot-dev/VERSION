@@ -1,3 +1,17 @@
+0.3.0
+  - refactorying for scripts shared with embedded linux
+  - installed with following nodejs modules globally inside vm
+    - async, prelude-ls
+    - bleno, noble
+    - byline
+    - chalk
+    - colors
+    - cron, optimist
+    - request
+    - winston, influx
+    - express, express-winston, method-override, morgan, multer, body-parser
+    - socket.io, socket.io-client
+
 0.2.2
   - add `cmake` tool for building some portable native codes (written in C/C++)
 
