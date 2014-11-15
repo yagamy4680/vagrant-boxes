@@ -1,5 +1,5 @@
 #!/bin/bash
-[ "true" == "${IGNORE_REPO_UPDATE}" ] || apt-get udpate
+[ "true" == "${IGNORE_REPO_UPDATE}" ] || apt-get update
 
 # Install all necessary packages for Arduino development
 apt-get install -y arduino python-pip build-essential vim

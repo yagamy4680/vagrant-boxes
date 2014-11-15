@@ -1,5 +1,5 @@
 #!/bin/bash
-[ "true" == "${IGNORE_REPO_UPDATE}" ] || apt-get udpate
+[ "true" == "${IGNORE_REPO_UPDATE}" ] || apt-get update
 
 # Refet to https://github.com/joyent/node/wiki/installing-node.js-via-package-manager
 #
