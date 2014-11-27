@@ -7,3 +7,7 @@ apt-get install -y arduino python-pip build-essential vim
 # Install command-line tools for Arduino build system
 #
 pip install ino
+
+# Avoid library compilation error led by Robot_Control.
+#
+rm -rf /usr/share/arduino/libraries/Robot_Control
