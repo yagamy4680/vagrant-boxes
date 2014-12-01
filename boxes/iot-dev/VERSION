@@ -1,3 +1,10 @@
+0.3.2
+  - fix issue `missing guest additions` for mounting /vagrant folder
+
+0.3.1
+  - fix Arduino compilation error caused by Robot_Control
+    (refer to commit: 1ae831b19e22aff2fe12d9544e49e8446fb825ff)
+
 0.3.0
   - refactorying for scripts shared with embedded linux
   - installed with following nodejs modules globally inside vm

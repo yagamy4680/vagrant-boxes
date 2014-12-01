@@ -7,6 +7,10 @@ VAGRANTFILE_API_VERSION = "2"
 # Hostname for guest system
 VBOX_NAME = File.basename(Dir.getwd)
 
+unless Vagrant.has_plugin?("vagrant-vbguest")
+  raise "vagrant-vbguest is not installed!!"
+end
+
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.hostname = VBOX_NAME
