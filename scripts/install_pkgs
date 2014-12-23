@@ -31,6 +31,17 @@ if [ ! -f "${PACKAGE_LIST_FILE}" ]; then
 fi
 PKGS=($(cat ${PACKAGE_LIST_FILE} | sed -e 's/^ *//' | sed -e 's/ *$//' | sed 's/#.*$//g' | grep -v "^$"))
 
+if [ "" != "EXTRA_PKGS" ]; then
+	X=$(echo "${EXTRA_PKGS}" | tr ',' ' ')
+	read -a EXTRA_PKGS <<<$X
+	PKGS=("${PKGS[@]}" "${EXTRA_PKGS[@]}")
+fi
+
+echo "installing following packages: "
+for i in "${PKGS[@]}"
+do
+	echo -e "\t$i"
+done
 
 # Installation on Ubuntu system
 #

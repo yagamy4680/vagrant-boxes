@@ -10,7 +10,7 @@ cd ${TMP}
 
 # Install software packages with distribution's package manager (e.g. apt-get)
 # 
-BOX_NAME=${BOX_NAME} IGNORE_REPO_UPDATE=true ${CURRENT}/install_pkgs
+BOX_NAME=${BOX_NAME} IGNORE_REPO_UPDATE=true EXTRA_PKGS=${EXTRA_PKGS} ${CURRENT}/install_pkgs
 
 # Install nodejs modules with `npm`
 #
