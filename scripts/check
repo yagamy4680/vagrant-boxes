@@ -1,0 +1,17 @@
+#!/bin/bash
+set -e
+
+[ "" == "${BOX_NAME}" ] && BOX_NAME=$(hostname)
+
+CURRENT=$(dirname $0)
+cd ${CURRENT}
+CURRENT=$(pwd)
+cd ${TMP}
+
+# Install software packages with distribution's package manager (e.g. apt-get)
+# 
+BOX_NAME=${BOX_NAME} IGNORE_REPO_UPDATE=true EXTRA_PKGS=${EXTRA_PKGS} ${CURRENT}/check_pkgs
+
+# Install nodejs modules with `npm`
+#
+BOX_NAME=${BOX_NAME} ${CURRENT}/check_pkgs_npm
