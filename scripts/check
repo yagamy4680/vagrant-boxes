@@ -1,5 +1,8 @@
 #!/bin/bash
-set -e
+
+function check_executable {
+	[ "" == "$(which $1)" ] && echo "missing $1 ..."
+}
 
 [ "" == "${BOX_NAME}" ] && BOX_NAME=$(hostname)
 
@@ -8,10 +11,9 @@ cd ${CURRENT}
 CURRENT=$(pwd)
 cd ${TMP}
 
-# Install software packages with distribution's package manager (e.g. apt-get)
-# 
-BOX_NAME=${BOX_NAME} IGNORE_REPO_UPDATE=true EXTRA_PKGS=${EXTRA_PKGS} ${CURRENT}/check_pkgs
+PKGS=($(cat ${CURRENT}/_${BOX_NAME}/packages.checks | sed -e 's/^ *//' | sed -e 's/ *$//' | sed 's/#.*$//g' | grep -v "^$"))
+for i in "${PKGS[@]}"
+do
+	check_executable $i
+done
 
-# Install nodejs modules with `npm`
-#
-BOX_NAME=${BOX_NAME} ${CURRENT}/check_pkgs_npm
