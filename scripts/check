@@ -1,7 +1,19 @@
 #!/bin/bash
 
 function check_executable {
-	[ "" == "$(which $1)" ] && echo "missing $1 ..."
+	if [ "" == "$(which $1)" ]; then
+		echo "missing $1 ..."
+	else
+		echo "found   $1"
+	fi
+}
+
+function check_npm_module {
+	if [ "" == "$(grep $1 $2)" ]; then
+		echo "missing npm-module: $1 ..."
+	else
+		echo "found npm-module  : $1"
+	fi
 }
 
 [ "" == "${BOX_NAME}" ] && BOX_NAME=$(hostname)
@@ -17,3 +29,22 @@ do
 	check_executable $i
 done
 
+
+# Detect `npm_packages.conf` for Nodejs modules to be installed.
+#
+MODULE_LIST_FILE="${CURRENT}/_${BOX_NAME}/npm_packages.conf"
+if [ ! -f "${MODULE_LIST_FILE}" ]; then
+        echo "[warning] no packages to install, because of missing ${MODULE_LIST_FILE} ..."
+        exit 0
+fi
+
+# Install each module
+#
+TMP=$(mktemp)
+MODULES=($(cat ${MODULE_LIST_FILE} | sed -e 's/^ *//' | sed -e 's/ *$//' | sed 's/#.*$//g' | grep -v "^$" | awk '{printf "%s ", $1}'))
+echo "preparing global npm module list ..."
+npm list -g | grep -e "^[├|└]" | awk '{print $2}' > ${TMP}
+for i in "${MODULES[@]}"
+do
+	check_npm_module $i ${TMP}
+done
