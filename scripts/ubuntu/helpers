@@ -1,0 +1,21 @@
+#!/bin/bash
+
+function install_packages {
+	TMP=$(mktemp)
+	PKGS=($(echo $1 | tr ' ' '\n'))
+	for p in "${PKGS[@]}"
+	do
+		dpkg -L $p > /dev/null 2>&1
+		if [ "0" == "$?" ]; then
+			echo "$NAME: found   $p"
+		else
+			echo "$NAME: missing $p"
+			echo $p >> ${TMP}
+		fi
+	done
+
+	PKGS="$(cat ${TMP} | tr '\n' ' '})"
+	CMD="apt-get install -y ${PKGS}"
+	echo "$NAME: $CMD"
+	$CMD
+}

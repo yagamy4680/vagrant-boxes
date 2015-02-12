@@ -1,0 +1,20 @@
+#!/bin/bash
+[ "true" == "${IGNORE_REPO_UPDATE}" ] || apt-get update
+
+source $(dirname $0)/helpers
+
+NAME=$(basename $0) install_packages "libjpeg-dev pkg-config make subversion imagemagick git"
+TMP=$(pwd)
+
+if [ ! -d "/opt/mjpg-streamer" ]; then
+	cd /tmp
+	git clone https://github.com/yagamy4680/mjpg-streamer.git
+	cd mjpg-streamer/mjpg-streamer-experimental
+	make clean
+	make
+	mkdir -p /opt/mjpg-streamer
+	cp mjpg_streamer /opt/mjpg-streamer/
+	cp *.so /opt/mjpg-streamer/
+	cp -R www/ /opt/mjpg-streamer
+	cd ${TMP}
+fi
