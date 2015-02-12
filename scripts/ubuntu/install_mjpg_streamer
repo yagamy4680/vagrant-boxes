@@ -3,7 +3,7 @@
 
 source $(dirname $0)/helpers
 
-NAME=$(basename $0) install_packages "libjpeg-dev pkg-config make subversion imagemagick git"
+NAME=$(basename $0) install_packages "libjpeg-dev pkg-config make subversion imagemagick git v4l-utils"
 TMP=$(pwd)
 
 if [ ! -d "/opt/mjpg-streamer" ]; then
