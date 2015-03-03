@@ -54,8 +54,8 @@ if [ "ubuntu" == "${OS}" ]; then
 	export INSTALL_PYTHON_PACKAGES=true
 	for i in "${PKGS[@]}"
 	do
-		echo "${FETCH_CMD}/install_$i | /bin/bash"
-		${FETCH_CMD}/install_$i | /bin/bash
+		echo "installing $i"
+		${CURRENT}/${OS}/install_$i 2>&1 | awk '{printf "\t%s\n", \$0}'
 	done
 fi
 

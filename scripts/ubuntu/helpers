@@ -1,21 +1,137 @@
 #!/bin/bash
 
-function install_packages {
+function install {
+	if [ "pip" == "${SUBSYSTEM}" ]; then
+		[ "true" == "${VERBOSE}" ] && pip install --upgrade $1 || pip install --upgrade --quiet $1
+	else
+		[ "true" == "${VERBOSE}" ] && apt-get install -y $1 || apt-get install -y -qq $1
+	fi
+}
+
+function initiate {
+	export TARGET=$(echo $0 | sed 's/^.*_//g')
+
+	# Inspired by http://stackoverflow.com/questions/5947742/how-to-change-the-output-color-of-echo-in-linux
+	# 
+	export COLOR_YELLOW="\033[0;33m"
+	export COLOR_GRAY="\033[1;30m"
+	export COLOR_BLUE="\033[1;34m"
+	export COLOR_RED="\033[1;31m"
+	export COLOR_NA="\033[0m"
+	export CCOMMA="${COLOR_YELLOW}:${COLOR_NA}"
+	export PREFIX="${COLOR_GRAY}${TARGET}${COLOR_NA}:${COLOR_GRAY}$FUNCNAME${COLOR_NA}"
+
+	[ "true" != "${IGNORE_REPO_UPDATE}" ] && DBG "updating apt-get repositories ..." && apt-get update
+
+	export PREFIX="${COLOR_GRAY}${TARGET}${COLOR_NA}:${COLOR_GRAY}$FUNCNAME${COLOR_NA}"
+	DBG "install pkg-config"
+	install pkg-config
+}
+
+
+function remove_comments_whitespaces {
+	cat $1 | sed -e 's/^ *//' | sed -e 's/ *$//' | sed 's/#.*$//g' | grep -v '^$'
+}
+
+function DBG {
+	echo -e "$PREFIX: $1"
+}
+
+function ERR {
+	echo -e "$PREFIX: ${COLOR_RED}$1${COLOR_NA}"
+}
+
+function YELLOW {
+	echo "${COLOR_YELLOW}$@${COLOR_NA}"
+}
+
+function BLUE {
+	echo "${COLOR_BLUE}$@${COLOR_NA}"
+}
+
+function install_package {
+	[ "" == "$1" ] && export SUBSYSTEM="util" || export SUBSYSTEM="$1"
+	export PREFIX="${COLOR_GRAY}${TARGET}${COLOR_NA}:${COLOR_GRAY}$FUNCNAME${COLOR_NA}"
+
+	CONF="../${SUBSYSTEM}.conf"
+	[ ! -f "${CONF}" ] && ERR "missing ${CONF}" && return 1
+
+	PKG_CONF=$(remove_comments_whitespaces ${CONF} | grep "^$2")
+	[ "" == "${PKG_CONF}" ] && ERR "missing $2 in ${CONF}" && return 1
+
+	PKG_NAME=$(echo ${PKG_CONF} | head -n1 | tr '\t' ' ' | awk '{print $1}')
+	PKG_CMDS=$(echo ${PKG_CONF} | head -n1 | tr '\t' ' ' | awk '{print $2}')
+
+	if [ "pip" == "${SUBSYSTEM}" ]; then
+		[ "" == "$(pip show ${PKG_NAME})" ] && export STATUS="unavailable" || export STATUS="installed"
+		export CMD="pip install --upgrade ${PKG_NAME}"
+	else	
+		dpkg -L ${PKG_NAME} > /dev/null 2>&1
+		[ "0" == "$?" ] && export STATUS="installed" || export STATUS="unavailable"
+		export CMD="apt-get install -y ${PKG_NAME}"
+	fi
+
+	if [ "installed" == "${STATUS}" ]; then
+		DBG "$(YELLOW ${PKG_NAME}): already installed"
+	else
+		DBG "$(YELLOW ${PKG_NAME}): installing..."
+		install ${PKG_NAME}
+		[ "0" != "$?"  ] && ERR "failed to install $(YELLOW ${PKG_NAME}), please re-run installation command to see error: $(BLUE ${CMD})" && return 1
+	fi
+
+	CMDS=($(echo ${PKG_CMDS} | tr ',' '\n'))
 	TMP=$(mktemp)
-	PKGS=($(echo $1 | tr ' ' '\n'))
-	for p in "${PKGS[@]}"
+	for p in "${CMDS[@]}"
 	do
-		dpkg -L $p > /dev/null 2>&1
-		if [ "0" == "$?" ]; then
-			echo "$NAME: found   $p"
+		if [ "lib" != "${SUBSYSTEM}" ]; then
+			which $p > /dev/null 2>&1
+			if [ "0" == "$?" ]; then
+				DBG "$(YELLOW ${PKG_NAME}): <$(BLUE $p)> checks successfully"
+			else
+				echo $p >> ${TMP}
+			fi
 		else
-			echo "$NAME: missing $p"
-			echo $p >> ${TMP}
+			LIB_PATH=$(ldconfig -p | grep "lib$p" | tail -n1 | sed 's/^.*=> //g')
+			if [ "" == "${LIB_PATH}" ]; then
+				echo $p >> ${TMP}
+				DBG "$(YELLOW ${PKG_NAME}): failed to find lib$p.so"
+			else
+				DBG "$(YELLOW ${PKG_NAME}): found $(BLUE ${LIB_PATH})"
+			fi
 		fi
 	done
 
-	PKGS="$(cat ${TMP} | tr '\n' ' '})"
-	CMD="apt-get install -y ${PKGS}"
-	echo "$NAME: $CMD"
-	$CMD
+	if [ "" == "$(cat ${TMP})" ]; then
+		return 0
+	else
+		ERR "failed to find <$(cat ${TMP} | tr '\n' ',' | sed -e 's/,$//g')> commands after installing <${PKG_NAME}>"
+		return 1
+	fi
+}
+
+function install_utils {
+	PKGS=($(echo $1 | tr ' ' '\n'))
+	for p in "${PKGS[@]}"
+	do
+		install_package util $p || return 1
+	done
+	return 0
+}
+
+function install_libs {
+	PKGS=($(echo $1 | tr ' ' '\n'))
+	for p in "${PKGS[@]}"
+	do
+		install_package lib "lib$p" || return 1
+	done
+	return 0
+}
+
+function install_python_pkgs {
+	PKGS=($(echo $1 | tr ' ' '\n'))
+	for p in "${PKGS[@]}"
+	do
+		install_package pip $p || return 1
+	done
+	return 0
 }

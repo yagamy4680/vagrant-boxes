@@ -1,11 +1,18 @@
 #!/bin/bash
-[ "true" == "${IGNORE_REPO_UPDATE}" ] || apt-get update
 
 source $(dirname $0)/helpers
 
-NAME=$(basename $0) install_packages "libjpeg-dev pkg-config make subversion imagemagick git v4l-utils"
-TMP=$(pwd)
+# Initiate Package Installation
+#
+initiate
 
+# Install packages
+#
+install_utils "git subversion build-essential imagemagick v4l-utils" || exit 1
+install_libs "jpeg png" || exit 1
+
+
+TMP=$(pwd)
 if [ ! -d "/opt/mjpg-streamer" ]; then
 	cd /tmp
 	git clone https://github.com/yagamy4680/mjpg-streamer.git
