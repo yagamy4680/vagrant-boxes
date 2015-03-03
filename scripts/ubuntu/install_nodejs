@@ -1,10 +1,17 @@
 #!/bin/bash
-[ "true" == "${IGNORE_REPO_UPDATE}" ] || apt-get update
 
-# Refet to https://github.com/joyent/node/wiki/installing-node.js-via-package-manager
+source $(dirname $0)/helpers
+
+# Initiate Package Installation
 #
-wget -O- -q https://deb.nodesource.com/setup | sudo bash -
-apt-get install -y nodejs
+initiate
 
-npm install -g LiveScript@1.2.0 coffee-script
-npm install -g pm2 --unsafe-perm
+if [ "" == "$(which node)" ]; then
+	# Refet to https://github.com/joyent/node/wiki/installing-node.js-via-package-manager
+	wget -O- -q https://deb.nodesource.com/setup | sudo bash -
+
+	# Install all necessary packages for Arduino development
+	install_utils "nodejs" || exit 1
+fi
+
+install_nodejs_utils "LiveScript coffee-script pm2 forever"

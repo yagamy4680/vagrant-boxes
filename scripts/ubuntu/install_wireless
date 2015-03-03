@@ -1,3 +1,11 @@
 #!/bin/bash
-[ "true" == "${IGNORE_REPO_UPDATE}" ] || apt-get update
-apt-get install -y wireless-tools iw wpasupplicant
+
+source $(dirname $0)/helpers
+
+# Initiate Package Installation
+#
+initiate
+
+# Install all necessary packages for Arduino development
+#
+install_utils "wireless-tools iw wpasupplicant" || exit 1
