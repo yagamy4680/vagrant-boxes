@@ -55,7 +55,7 @@ if [ "ubuntu" == "${OS}" ]; then
 	for i in "${PKGS[@]}"
 	do
 		echo "installing $i"
-		${CURRENT}/${OS}/install_$i 2>&1 | awk '{printf "\t%s\n", \$0}'
+		CONF_DIR=${CURRENT}/conf ${CURRENT}/${OS}/install_$i
 	done
 fi
 
