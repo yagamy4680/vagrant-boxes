@@ -58,7 +58,7 @@ function install_package {
 	[ "" == "$1" ] && export SUBSYSTEM="util" || export SUBSYSTEM="$1"
 	export PREFIX="${COLOR_GRAY}${TARGET}${COLOR_NA}:${COLOR_GRAY}$FUNCNAME${COLOR_NA}"
 
-	CONF="../conf/${SUBSYSTEM}.conf"
+	[ "" == "${CONF_DIR}" ] && export CONF="../conf/${SUBSYSTEM}.conf" || export CONF="${CONF_DIR}/${SUBSYSTEM}.conf"
 	[ ! -f "${CONF}" ] && ERR "missing ${CONF}" && return 1
 
 	PKG_CONF=$(remove_comments_whitespaces ${CONF} | grep "^$2")
