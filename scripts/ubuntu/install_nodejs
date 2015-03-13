@@ -14,5 +14,6 @@ if [ "" == "$(which node)" ]; then
 	install_utils "nodejs" || exit 1
 fi
 
+install_utils "python-pip" || exit 1
 install_python_pkgs "httpie" || exit 1
 install_nodejs_utils "LiveScript coffee-script pm2 forever"
