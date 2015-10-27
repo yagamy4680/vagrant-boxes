@@ -1,0 +1,5 @@
+#!/bin/bash
+echo "post-init script ... hello world"
+
+apt-get install -y cmake iptables
+pip install --upgrade httpie

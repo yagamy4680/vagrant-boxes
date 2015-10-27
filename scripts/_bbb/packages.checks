@@ -1,0 +1,43 @@
+#
+# Use distribution's installation scripts to install
+# different software packages/components.
+#
+
+# util
+#
+gawk
+
+
+# wireless
+#
+iw
+iwconfig
+wpa_supplicant
+
+
+# nodejs
+# 
+node
+npm
+lsc
+pm2
+coffee
+
+
+# bluez
+# 
+hciconfig
+hcitool
+
+
+# arduino
+#
+vim
+python
+ino
+
+# others
+#
+http
+cmake
+iptables
