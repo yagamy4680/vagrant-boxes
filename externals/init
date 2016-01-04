@@ -1,0 +1,14 @@
+#!/bin/bash
+
+CURRENT=$(pwd)
+cd $(dirname $0)
+EXTERNAL_DIR=$(pwd)
+cd ${CURRENT}
+
+if [ ! -d "${EXTERNAL_DIR}/dotfiles" ]; then
+	git clone https://github.com/yagamy4680/dotfiles.git ${EXTERNAL_DIR}/dotfiles
+	cd ${EXTERNAL_DIR}/dotfiles
+	git submodule init
+	git submodule update
+fi
+
