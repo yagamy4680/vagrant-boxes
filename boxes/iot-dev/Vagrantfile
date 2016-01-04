@@ -1,8 +1,6 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
-
-# Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
-VAGRANTFILE_API_VERSION = "2"
+Vagrant.require_version ">= 1.8.0"
 
 # Hostname for guest system
 VBOX_NAME = File.basename(Dir.getwd)
@@ -11,15 +9,38 @@ unless Vagrant.has_plugin?("vagrant-vbguest")
   raise "vagrant-vbguest is not installed!!"
 end
 
-Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+# Project Root
+#
+PROJECT_ROOTDIR = File.expand_path("../../")
+PROJECT_EXTERNAL_DIR = "#{PROJECT_ROOTDIR}/externals"
+
+# Directories to be mounted at /opt under LinuxBox with `rsync` methodology
+# for performance consideration.
+#
+OPT_RSYNC_DIRS = %W(
+  #{PROJECT_EXTERNAL_DIR}/dotfiles
+)
+
+
+
+Vagrant.configure(2) do |config|
 
   config.vm.hostname = VBOX_NAME
+  config.vm.box = "yagamy/docker-base"
 
   # Share current repository at top.
   config.vm.synced_folder "../../", "/vagrant-boxes"
 
-  # Every Vagrant virtual environment requires a box to build off of.
-  config.vm.box = "ffuenf/ubuntu-14.04.1-server-amd64"
+  OPT_RSYNC_DIRS.each do |dir|
+    if File.directory?(dir)
+      name = File.basename(File.expand_path(dir))
+      config.vm.synced_folder dir, "/opt/#{name}",
+        type: "rsync",
+        rsync__args: ["--verbose", "--rsync-path='sudo rsync'", "--archive", "--delete", "-z"]
+    else
+      puts "[warning] #{dir} does not exist!!"
+    end
+  end
 
   # Enable `vagrant-cachier` to cache APT packages for multiple machine
   # environment.
@@ -36,12 +57,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     end
   end
 
-  # Invoke following scripts to install softwares
-  #   - install_arduino
-  #   - install_bluez
-  #   - install_nodejs
-  #   - install_util
-  #   - install_wireless
-  #
-  config.vm.provision "shell", inline: "sudo /vagrant-boxes/scripts/init"
+  config.vm.provider "virtualbox" do |vb|
+    vb.linked_clone = true
+  end
+
+  config.vm.provision "shell", inline: "/bin/bash /opt/dotfiles/bootstrap"
+  config.vm.provision "shell", inline: "/bin/bash /vagrant/init_nodejs"
 end
+

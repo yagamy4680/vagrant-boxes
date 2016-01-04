@@ -17,8 +17,8 @@ VERSION=$(cat "$(dirname $0)/VERSION" | sed /^[[:blank:]]*$/d | head -n1 | sed -
 BOX_FILE="${NAME}_${VERSION}_${PROVIDER}.box"
 BOX_PATH="/tmp/${BOX_FILE}"
 
-[ "" == "${HOST_SITE}" ] && export HOST_SITE="nuc54250a.local"
-[ "" == "${HOST_USER}" ] && export HOST_USER="vagrant"
+[ "" == "${HOST_SITE}" ] && export HOST_SITE="nuc54250b.local"
+[ "" == "${HOST_USER}" ] && export HOST_USER="smith"
 [ "" == "${HOST_PATH}" ] && export HOST_PATH="/opt/data/nginx/vagrant/vboxes"
 
 HOST_URL="${HOST_USER}@${HOST_SITE}:${HOST_PATH}"
@@ -54,19 +54,19 @@ cp ../../scripts/Vagrantfile ~/.vagrant.d
 vagrant destroy -f
 
 # Bring-up the box, and install all required software with provision scripts
-time vagrant up --provider ${PROVIDER}
+time vagrant up --provider ${PROVIDER} || exit 1
 
 # Disable `vagrant-cachier` (so no cache folder is mounted) and bring-up again for disk-cleanup
 [ "" == "$(vagrant plugin list | grep "vagrant-cachier")" ] && export IGNORE_APT_CACHE_CLEANUP="true" || export IGNORE_APT_CACHE_CLEANUP="false"
-time vagrant ssh -c "sudo IGNORE_APT_CACHE_CLEANUP=${IGNORE_APT_CACHE_CLEANUP} /vagrant-boxes/scripts/cleanup_disk"
+time vagrant ssh -c "sudo IGNORE_APT_CACHE_CLEANUP=${IGNORE_APT_CACHE_CLEANUP} /vagrant-boxes/scripts/cleanup_disk" || exit 1
 
 # Package the box
 rm -f ${BOX_PATH}
-time vagrant package --output=${BOX_PATH}
+time vagrant package --output=${BOX_PATH} || exit 1
 
 # Upload the box to host server
-echo "upload box to ${HOST_SITE}"
+echo "upload box to ${HOST_SITE} (from ${BOX_PATH} to ${HOST_URL})"
 scp ${BOX_PATH} ${HOST_URL}
 
 # Delete the box file
-rm -f ${BOX_PATH}
+# rm -f ${BOX_PATH}

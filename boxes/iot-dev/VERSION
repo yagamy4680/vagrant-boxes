@@ -1,3 +1,8 @@
+0.5.0
+  - refactorying with dotfiles / nodenv / vim
+  - nodejs versions: `0.10.41`, `0.11.9`, `0.12.9`, `4.2.4` (default), `5.3.0`
+  - nodejs modules for each version: [livescript](http://livescript.net/), [browserify](http://browserify.org/), [exorcist](https://github.com/thlorenz/exorcist), [uglify-js](https://github.com/mishoo/UglifyJS2), [prettyjson](https://github.com/rafeca/prettyjson).
+
 0.3.2
   - fix issue `missing guest additions` for mounting /vagrant folder
 
