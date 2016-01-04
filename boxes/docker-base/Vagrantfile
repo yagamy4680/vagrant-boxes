@@ -1,0 +1,44 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
+VAGRANTFILE_API_VERSION = "2"
+
+# Hostname for guest system
+VBOX_NAME = File.basename(Dir.getwd)
+
+unless Vagrant.has_plugin?("vagrant-vbguest")
+  raise "vagrant-vbguest is not installed!!"
+end
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+
+  config.vm.hostname = VBOX_NAME
+
+  # Every Vagrant virtual environment requires a box to build off of.
+  config.vm.box = "williamyeh/ubuntu-trusty64-docker"
+
+  # Share current repository at top.
+  config.vm.synced_folder "../../", "/vagrant-boxes"
+
+  # Enable `vagrant-cachier` to cache APT packages for multiple machine
+  # environment.
+  #
+  if Vagrant.has_plugin?("vagrant-cachier")
+    config.cache.scope = :machine
+    config.cache.auto_detect = true
+  else
+    # only display the tips on vagrant up
+    if ARGV[0] == "up"
+      puts "[information] recommended vagrant plugin 'vagrant-cachier' plugin was not found"
+      puts "[information] 'vagrant-cachier' will speed up repeated provisioning operations"
+      puts "[information] install the plugin with command 'vagrant plugin install vagrant-cachier'"
+    end
+  end
+
+  config.vm.provider "virtualbox" do |vb|
+    vb.linked_clone = true
+  end
+
+  config.vm.provision "shell", inline: "apt-get update -qq && apt-get install -q -y vim"
+end

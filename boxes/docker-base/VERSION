@@ -1,0 +1,6 @@
+0.1.1
+  - add vim tool
+
+0.1.0
+  - initial version, based on `williamyeh/ubuntu-trusty64-docker`
+  - installed with virtualbox-guest v5.0.12
